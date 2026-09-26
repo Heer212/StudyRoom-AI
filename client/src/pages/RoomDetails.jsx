@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { ArrowLeft, Users, Plus, Trash2, CheckCircle2, Upload, FileText, Image as ImageIcon, File, Download, Shield } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
+import { socket } from '../socket'
+import { Send } from 'lucide-react'
 
 const COLORS = {
   bg: '#F8FAFC',
@@ -43,6 +45,10 @@ function RoomDetails() {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
 
+  const [messages, setMessages] = useState([])
+  const [messageInput, setMessageInput] = useState('')
+  const chatEndRef = useState(null)
+
   const fetchRoom = () => {
     axios.get(`/api/rooms/${id}`)
       .then((res) => setRoom(res.data))
@@ -70,6 +76,23 @@ function RoomDetails() {
     fetchResources()
   }, [id])
 
+  useEffect(() => {
+  axios.get(`/api/messages/${id}`).then((res) => setMessages(res.data))
+
+  socket.emit('joinRoom', id)
+
+  const handleReceiveMessage = (message) => {
+      setMessages((prev) => [...prev, message])
+    }
+
+    socket.on('receiveMessage', handleReceiveMessage)
+
+    return () => {
+      socket.emit('leaveRoom', id)
+      socket.off('receiveMessage', handleReceiveMessage)
+    }
+  }, [id])
+
   const handleJoin = async () => {
     setJoining(true)
     try {
@@ -80,6 +103,18 @@ function RoomDetails() {
     } finally {
       setJoining(false)
     }
+  }
+
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (!messageInput.trim()) return
+
+    socket.emit('sendMessage', {
+      roomId: id,
+      content: messageInput,
+      sender: user,
+    })
+    setMessageInput('')
   }
 
   const addWeek = () => setWeeks([...weeks, { title: '', tasksText: '' }])
@@ -223,7 +258,7 @@ function RoomDetails() {
 
         {/* Tabs */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
-          {['overview', 'plan', 'resources'].map((t) => (
+          {['overview', 'plan', 'resources','chat'].map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -233,7 +268,7 @@ function RoomDetails() {
                   : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
               }`}
             >
-              {t === 'overview' ? 'Members' : t === 'plan' ? 'Study Plan' : 'Resources'}
+              {t === 'overview' ? 'Members' : t === 'plan' ? 'Study Plan' : t === 'resources' ? 'Resources' : 'Chat'}
             </button>
           ))}
         </div>
@@ -397,6 +432,41 @@ function RoomDetails() {
             })}
           </div>
         )}
+
+        {/* Chat tab */}
+        {tab === 'chat' && (
+        <div className="rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col h-[500px] overflow-hidden">
+          <div className="flex-1 p-5 overflow-y-auto space-y-3">
+            {messages.length === 0 && (
+              <p className="text-sm text-center mt-10" style={{ color: COLORS.muted }}>No messages yet. Say hello!</p>
+            )}
+            {messages.map((msg) => {
+              const isMe = msg.sender?._id === user?._id
+              return (
+                <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-xs p-3 rounded-2xl text-sm ${isMe ? 'text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}`}
+                    style={isMe ? { background: COLORS.accent } : {}}>
+                    {!isMe && <p className="text-xs font-bold mb-0.5" style={{ color: COLORS.teal }}>{msg.sender?.name}</p>}
+                    {msg.content}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-200 flex gap-2">
+            <input
+              type="text" placeholder="Type a message..."
+              value={messageInput} onChange={(e) => setMessageInput(e.target.value)}
+              className="flex-1 px-4 py-2.5 rounded-2xl text-sm outline-none bg-slate-50 border border-slate-200 focus:border-amber-500 transition-colors"
+              style={{ color: COLORS.text }}
+            />
+            <button type="submit" className="px-4 py-2.5 rounded-2xl text-white shadow-md" style={{ background: COLORS.accent }}>
+              <Send size={16} />
+            </button>
+          </form>
+        </div>
+      )}
+      
       </div>
     </div>
   )

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuthStore } from './store/authStore'
+import { socket } from './socket'
 
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -14,11 +15,14 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('/api/auth/me')
-      .then(res => setUser(res.data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false))
-  }, [])
+  axios.get('/api/auth/me')
+    .then(res => {
+      setUser(res.data)
+      socket.connect()
+    })
+    .catch(() => setUser(null))
+    .finally(() => setLoading(false))
+}, [])
 
   if (loading) {
     return (
