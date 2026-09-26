@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema(
     subscription: {
       plan: { type: String, enum: ['free', 'premium'], default: 'free' },
     },
+    resetOtp: { type: String },
+    resetOtpExpiry: { type: Date },
   },
   { timestamps: true }
 );

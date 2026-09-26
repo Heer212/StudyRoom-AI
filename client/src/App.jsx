@@ -5,6 +5,7 @@ import { useAuthStore } from './store/authStore'
 
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
 import RoomDetails from './pages/RoomDetails'
 
@@ -32,6 +33,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/rooms/:id" element={<RoomDetails />} /> 
       </Routes>

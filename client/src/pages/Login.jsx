@@ -67,6 +67,14 @@ function Login() {
           {error && <p className="text-rose-600 text-xs font-medium">{error}</p>}
 
           <button
+            type="button"
+            onClick={() => navigate('/forgot-password')}
+            className="text-xs text-amber-600 self-end hover:text-amber-700"
+          >
+            Forgot password?
+          </button>
+
+          <button
             type="submit"
             className="mt-1 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-2xl text-sm font-bold shadow-md shadow-amber-500/20 transition-all"
           >
