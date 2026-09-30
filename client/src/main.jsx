@@ -5,7 +5,8 @@ import App from './App.jsx'
 import {GoogleOAuthProvider} from '@react-oauth/google'
 import axios from 'axios'
 
-axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || '' axios.defaults.withCredentials = true;
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
