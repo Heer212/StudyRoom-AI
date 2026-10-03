@@ -1,6 +1,8 @@
 import { io } from 'socket.io-client';
 
-export const socket = io('http://localhost:5000', {
+export const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+  path: '/api/server/socket.io',
+  transports: ['websocket'],
   withCredentials: true,
-  autoConnect: false, // we'll connect manually once we know the user is logged in
+  autoConnect: false,
 });
