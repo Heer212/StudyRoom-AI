@@ -221,7 +221,7 @@ function PomodoroWidget({ onSessionComplete }) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('rooms');
-  const [rooms, setRooms] = useState();
+  const [rooms, setRooms] = useState([]);
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
@@ -377,7 +377,7 @@ useEffect(() => {
     }, 700);
   };
 
-  const filteredRooms = rooms.filter(room => {
+  const filteredRooms = (rooms || []).filter(room => {
     const nameStr = renderSafeText(room.name).toLowerCase();
     const queryLower = searchQuery.toLowerCase();
     const topicsArr = Array.isArray(room.topics) ? room.topics : [];
@@ -385,7 +385,7 @@ useEffect(() => {
     return nameStr.includes(queryLower) || topicMatch;
   });
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = (tasks || []).filter(task => {
     if (taskFilter === 'pending') return !task.done;
     if (taskFilter === 'completed') return task.done;
     return true;
