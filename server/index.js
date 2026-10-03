@@ -30,6 +30,16 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(503).json({ error: 'Database connection failed' });
+  }
+});
+
+
 app.use('/api/rooms', roomRoutes);
 app.use('/api/plans', planRoutes);
 app.use('/api/auth', authRoutes);
