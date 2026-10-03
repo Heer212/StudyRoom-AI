@@ -221,7 +221,7 @@ function PomodoroWidget({ onSessionComplete }) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('rooms');
-  const [rooms, setRooms] = useState(INITIAL_ROOMS);
+  const [rooms, setRooms] = useState();
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
@@ -258,25 +258,22 @@ export default function App() {
   ]);
   const [inputChat, setInputChat] = useState('');
 
-  useEffect(() => {
-    const fetchApiRooms = async () => {
-      setIsLoadingApi(true);
-      try {
-        const response = await axios.get('/api/rooms', { timeout: 3000 });
-        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-          setRooms(response.data);
-          setIsApiConnected(true);
-        }
-      } catch (err) {
-        console.log('Backend API server not reached, operating in client mode:', err.message);
-        setIsApiConnected(false);
-      } finally {
-        setIsLoadingApi(false);
-      }
-    };
+useEffect(() => {
+  const fetchApiRooms = async () => {
+    setIsLoadingApi(true);
+    try {
+      const response = await axios.get('/api/rooms');
+      setRooms(response.data);
+    } catch (err) {
+      console.error('Failed to fetch rooms:', err.message);
+      setRooms([]);
+    } finally {
+      setIsLoadingApi(false);
+    }
+  };
 
-    fetchApiRooms();
-  }, []);
+  fetchApiRooms();
+}, []);
 
   const triggerToast = (msg) => {
     setToastMessage(renderSafeText(msg, 'Action completed!'));
@@ -341,16 +338,10 @@ export default function App() {
         setRooms(prev => [res.data, ...prev]);
         setIsApiConnected(true);
       }
-    } catch (err) {
-      console.warn('Backend API endpoint offline, performing optimistic client update:', err.message);
-      const fallbackRoom = {
-      id: Date.now().toString(),
-      ...newRoomPayload,
-      members: [{ name: user?.name, avatar: user?.picture }],
-      activeCount: 1,
-    };
-      setRooms(prev => [fallbackRoom, ...prev]);
-    }
+    }  catch (err) {
+  console.error('Failed to create room:', err.response?.data?.error || err.message);
+  triggerToast('Failed to create room — please try again.');
+}
 
     setRoomForm({
       name: '',
@@ -487,7 +478,7 @@ export default function App() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:block">
             <PomodoroWidget onSessionComplete={triggerToast} />
 
             <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-amber-400/80 transition-all cursor-pointer group">
@@ -629,7 +620,7 @@ export default function App() {
             </div>
 
             {activeTab === 'rooms' && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
                 <div className="relative">
                   <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
