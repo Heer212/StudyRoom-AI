@@ -1,7 +1,7 @@
 import express from 'express';
 import StudyPlan from '../models/StudyPlan.js';
 import StudyRoom from '../models/StudyRoom.js';
-import { protect } from '../middleware/Protect.js';
+import { protect } from '../middleware/protect.js';
 
 const router = express.Router();
 

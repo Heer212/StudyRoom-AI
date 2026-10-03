@@ -1,6 +1,6 @@
 import express from 'express';
 import StudyRoom from '../models/StudyRoom.js';
-import { protect } from '../middleware/Protect.js';
+import { protect } from '../middleware/protect.js';
 import { sendEmail } from '../utils/sendEmail.js';
 
 const router = express.Router();
