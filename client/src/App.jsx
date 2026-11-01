@@ -9,6 +9,7 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
 import RoomDetails from './pages/RoomDetails'
+import Pricing from './pages/Pricing'
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser)
@@ -40,6 +41,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/rooms/:id" element={<RoomDetails />} /> 
+        <Route path="/pricing" element={<Pricing />} />
       </Routes>
     </BrowserRouter>
   )

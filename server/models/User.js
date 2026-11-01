@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema(
     password: { type: String }, // only used for email/password signups later
     subscription: {
       plan: { type: String, enum: ['free', 'premium'], default: 'free' },
+      billing: { type: String, enum: ['monthly', 'yearly'] },
+      startDate: { type: Date },
+      endDate: { type: Date },
     },
     resetOtp: { type: String },
     resetOtpExpiry: { type: Date },

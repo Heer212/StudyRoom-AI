@@ -12,6 +12,8 @@ import resourceRoutes from './routes/resourceRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import connectDB from './config/db.js';
 import Message from './models/Message.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 
 connectDB();
 
@@ -45,6 +47,8 @@ app.use('/api/plans', planRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
